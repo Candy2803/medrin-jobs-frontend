@@ -6,9 +6,8 @@ const LandingPage: React.FC = () => {
     <div className="flex flex-col justify-center h-screen bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
       <h1 className="text-4xl font-bold mb-8">Welcome to Medrin Jobs</h1>
       <p className="text-lg mb-10 text-center max-w-lg">
-        Your platform for connecting employers with talented job seekers. Choose your path below to get started.
+        Your platform for connecting employers with talented job seekers.
       </p>
-
       <div className="flex gap-10 ">
         <Link
           to="/employer"
