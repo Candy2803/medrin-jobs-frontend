@@ -9,6 +9,7 @@ import PageTitle from './Components/PageTitle';
 import AdminDashboard from './Components/AdminDashboard';
 import DetailedAdminDashboard from './Components/DetailedAdminDashboard';
 import LoadingPage from './Components/LoadingPage';
+import PaymentForm from './Components/PaymentForm';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -35,15 +36,6 @@ const App: React.FC = () => {
               <>
                 <PageTitle title="Landing Page" />
                 <LandingPage />
-              </>
-            }
-          />
-          <Route
-            path="/loading"
-            element={
-              <>
-                <PageTitle title="Loading Page" />
-                <LoadingPage />
               </>
             }
           />
@@ -83,6 +75,15 @@ const App: React.FC = () => {
               </>
             }
           />
+          <Route
+            path="/payment"
+            element={
+              <>
+                <PageTitle title='Payment' />
+                <PaymentForm />
+              </>
+            }
+            />
           <Route
             path="/admin-dashboard"
             element={
