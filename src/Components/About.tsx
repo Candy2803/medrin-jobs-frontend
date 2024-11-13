@@ -1,21 +1,29 @@
 // import React from 'react';
+import img from './img/download.jpeg'
 
 const About = () => {
     return (
         <div className="bg-gray-50 text-gray-900 font-sans">
             {/* Header Section */}
-            <header className="text-center py-16 px-4 bg-white">
-                <h1 className="text-4xl font-bold mb-4">
-                    We’re here to <span className="text-blue-600">guarantee your success</span>
-                </h1>
-                <p className="max-w-3xl mx-auto text-lg mb-6 text-gray-700">
-                    ConsultUs provides consulting services that help business owners and executives build a more reliable business. We work closely with their teams to build a professional, cohesive, and future-ready plan. Our goal is to create confidence that radiates and adds value to potential clients.
-                </p>
-                <p className="text-2xl font-semibold text-blue-600">
-                    We’re here for you <span className="underline">no matter where you are</span>
-                </p>
-                <img src="/path/to/team-meeting.jpg" alt="Consulting Team Meeting" className="mx-auto mt-8 rounded-md shadow-lg max-w-md"/>
-            </header>
+            <header className="flex flex-col items-center py-16 px-4 bg-white relative">
+            <h1 className="text-6xl text-center font-bold">
+                    We’re here to <br /><span className="text-blue-600 underline">guarantee your success</span>
+                </h1><br />
+    <div className="bg-blue-600 text-white rounded-lg p-8 max-w-3xl text-center relative z-0 shadow-lg">
+        <p className="text-lg mb-4">
+            ConsultUs provides consulting services that help business owners and leaders build a more valuable business. We worked with their founder to build a professional, modern site that follows the StoryBrand framework to clearly communicate the value it adds to potential clients.
+        </p>
+    </div>
+    <div className="relative mt-[-40px] z-10">
+    <img
+    src={img}
+    alt="Consulting Team Meeting"
+    className="rounded-lg shadow-lg w-[600px] h-56 object-cover ml-[60px]"
+/>
+
+    </div>
+</header>
+
             {/* Mission Section */}
             <section className="py-16 px-4 bg-white">
                 <h2 className="text-3xl font-bold text-center mb-10">Our Mission</h2>

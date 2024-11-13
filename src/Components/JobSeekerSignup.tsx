@@ -24,7 +24,7 @@ const EmployerSignup: React.FC = () => {
       {/* Left section */}
       <div className="lg:w-1/2 bg-blue-500 lg:flex flex-col justify-between items-start p-10 text-white hidden">
         <div className="">
-        <a href="http://localhost:5173/medrin"><img
+        <a href="http://localhost:5173/"><img
             src={medrinJobsLogo}
             alt="medrin-jobs-logo"
             className="w-40 rounded-lg"
@@ -121,7 +121,7 @@ const EmployerSignup: React.FC = () => {
           <div className="text-center text-sm text-gray-600 mt-2">-OR-</div>
           <div className="text-center text-sm text-gray-600 mt-2">
             Are you an employer?{' '}
-            <a href="http://localhost:5173/employer-signup" className="text-blue-500 hover:underline">
+            <a href="http://localhost:5173/employer" className="text-blue-500 hover:underline">
               Sign up for employer
             </a>
           </div>
