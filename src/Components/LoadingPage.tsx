@@ -17,7 +17,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ logo = Logo }) => {
           <img 
             src={logo} 
             alt="Logo" 
-            className="relative w-32 h-32 object-contain rounded-full"
+            className="relative w-96 h-96 object-contain rounded-full"
           />
         </div>
       </div>
@@ -26,7 +26,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ logo = Logo }) => {
       <LoadingSpinner />
 
       {/* Loading text */}
-      <p className="mt-4 text-gray-600 font-medium animate-pulse">
+      <p className="mt-4 text-gray-600 text-2xl font-medium animate-pulse">
         Loading Please wait!
       </p>
     </div>

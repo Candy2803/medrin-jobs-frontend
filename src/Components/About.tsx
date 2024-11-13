@@ -1,5 +1,10 @@
 // import React from 'react';
 import img from './img/download.jpeg'
+import person1 from './img/download (2).jpeg'
+import person2 from './img/download (1).jpeg'
+import person3 from './img/download (3).jpeg'
+import person4 from './img/download(4).jpeg'
+
 
 const About = () => {
     return (
@@ -27,20 +32,20 @@ const About = () => {
             {/* Mission Section */}
             <section className="py-16 px-4 bg-white">
                 <h2 className="text-3xl font-bold text-center mb-10">Our Mission</h2>
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 text-center">
-                    <div>
+                <div className="flex justify-between gap-8 md:grid-cols-2 lg:grid-cols-4 text-center">
+                    <div className='bg-blue-100 rounded-2xl content-center h-40'>
                         <h3 className="text-xl font-semibold mb-2">Introduction</h3>
                         <p className="text-gray-700">Helping companies grow by providing tailored solutions in their growth strategy and management processes.</p>
                     </div>
-                    <div>
+                    <div className='bg-blue-100 rounded-2xl content-center h-40'>
                         <h3 className="text-xl font-semibold mb-2">Specialization</h3>
                         <p className="text-gray-700">We specialize in various industries, ensuring our support is deeply relevant to each client’s needs.</p>
                     </div>
-                    <div>
+                    <div className='bg-blue-100 rounded-2xl content-center h-40'>
                         <h3 className="text-xl font-semibold mb-2">Support</h3>
                         <p className="text-gray-700">Our team is dedicated to assisting clients in overcoming any business challenges.</p>
                     </div>
-                    <div>
+                    <div className='bg-blue-100 rounded-2xl content-center h-40'>
                         <h3 className="text-xl font-semibold mb-2">Technology</h3>
                         <p className="text-gray-700">We utilize the latest technologies and platforms to enhance the client experience.</p>
                     </div>
@@ -71,22 +76,22 @@ const About = () => {
                 <h2 className="text-3xl font-bold text-center mb-10">Our Success Team</h2>
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 text-center">
                     <div className="flex flex-col items-center">
-                        <img src="/path/to/team-member-1.jpg" alt="Team Member" className="w-24 h-24 rounded-full mb-4"/>
+                        <img src={person1} alt="Team Member" className="w-40 h-40 rounded-full mb-4"/>
                         <h3 className="text-lg font-semibold">Jenny Wilson</h3>
                         <p className="text-gray-500">Consultant</p>
                     </div>
                     <div className="flex flex-col items-center">
-                        <img src="/path/to/team-member-2.jpg" alt="Team Member" className="w-24 h-24 rounded-full mb-4"/>
+                        <img src={person4} alt="Team Member" className="w-40 h-40 rounded-full mb-4"/>
                         <h3 className="text-lg font-semibold">Eleanor Pena</h3>
                         <p className="text-gray-500">Account Manager</p>
                     </div>
                     <div className="flex flex-col items-center">
-                        <img src="/path/to/team-member-3.jpg" alt="Team Member" className="w-24 h-24 rounded-full mb-4"/>
+                        <img src={person3} alt="Team Member" className="w-40 h-40 rounded-full mb-4"/>
                         <h3 className="text-lg font-semibold">Robert Fox</h3>
                         <p className="text-gray-500">Project Lead</p>
                     </div>
                     <div className="flex flex-col items-center">
-                        <img src="/path/to/team-member-4.jpg" alt="Team Member" className="w-24 h-24 rounded-full mb-4"/>
+                        <img src={person2} alt="Team Member" className="w-40 h-40 rounded-full mb-4"/>
                         <h3 className="text-lg font-semibold">Ravi Kumar</h3>
                         <p className="text-gray-500">Developer</p>
                     </div>
@@ -105,7 +110,7 @@ const About = () => {
                         <a href="#" className="hover:text-white">Support</a>
                     </div>
                     <div className="flex justify-center space-x-4">
-                        <a href="#"><img src="/path/to/facebook-icon.svg" alt="Facebook" className="w-6 h-6"/></a>
+                        <a href=""><img src="/path/to/facebook-icon.svg" alt="Facebook" className="w-6 h-6"/></a>
                         <a href="#"><img src="/path/to/linkedin-icon.svg" alt="LinkedIn" className="w-6 h-6"/></a>
                         <a href="#"><img src="/path/to/twitter-icon.svg" alt="Twitter" className="w-6 h-6"/></a>
                     </div>
