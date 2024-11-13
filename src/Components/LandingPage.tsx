@@ -17,7 +17,7 @@ const LandingPage: React.FC = () => {
           className="group w-96 h-20 flex flex-col items-center justify-center rounded-lg transform transition duration-300 hover:scale-105"
         >
           <button className="text-black h-11 bg-white rounded-xl group-hover:text-indigo-500 transition-colors duration-300 mt-2 text-lg text-center px-4">
-            Looking for Talent?
+            <a href="http://localhost:5173/employer">Looking for Talent?</a>
           </button>
         </Link>
 
