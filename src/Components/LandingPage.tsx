@@ -13,7 +13,7 @@ const LandingPage: React.FC = () => {
 
       <div className="flex gap-10 self-center ">
         <Link
-          to="/employer"
+          to="/employer-signup"
           className="group w-96 h-20 flex flex-col items-center justify-center rounded-lg transform transition duration-300 hover:scale-105"
         >
           <button className="text-black h-11 bg-white rounded-xl group-hover:text-indigo-500 transition-colors duration-300 mt-2 text-lg text-center px-4">
@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
         </Link>
 
         <Link
-          to="/job-seeker"
+          to="/job-seeker-signup"
           className="group w-96 h-20 flex flex-col items-center justify-center rounded-lg transform transition duration-300 hover:scale-105"
         >
           <button className="text-black h-11 rounded-xl bg-white group-hover:text-indigo-500 transition-colors duration-300 mt-2 text-lg text-center px-4">
