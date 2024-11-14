@@ -28,94 +28,29 @@ const App: React.FC = () => {
   }
 
   return (
-    <Router>
-      <div className="animate-fade-in">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <PageTitle title="Landing Page" />
-                <LandingPage />
-              </>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <>
-                <PageTitle title="Login Page" />
-                <Login />
-              </>
-            }
-          />
-          <Route
-            path="/employer-signup"
-            element={
-              <>
-                <PageTitle title="Employer Sign Up Page" />
-                <EmployerSignUp />
-              </>
-            }
-          />
-          <Route
-            path="/job-seeker-signup"
-            element={
-              <>
-                <PageTitle title="Job Seeker Signup Page" />
-                <JobSeekerSignup />
-              </>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <>
-                <PageTitle title="About Page" />
-                <About />
-              </>
-            }
-          />
-          <Route
-            path="/payment"
-            element={
-              <>
-                <PageTitle title='Payment' />
-                <PaymentForm />
-              </>
-            }
-            />
-            <Route
-            path="/profile"
-            element={
-              <>
-                <PageTitle title='Profile' />
-                <ProfilePage />
-              </>
-            }
-            />
-          <Route
-            path="/admin-dashboard"
-            element={
-              <>
-                <PageTitle title="Admin Dashboard" />
-                <AdminDashboard />
-              </>
-            }
-          />
-          <Route
-            path="/admin-dashboard/:type"
-            element={
-              <>
-                <PageTitle title="Detailed Admin Dashboard" />
-                <DetailedAdminDashboard />
-              </>
-            }
-          />
-        </Routes>
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
       </div>
-    </Router>
-  );
-};
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
+}
 
-export default App;
+export default App
