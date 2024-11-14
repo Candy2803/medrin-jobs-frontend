@@ -10,6 +10,7 @@ import AdminDashboard from './Components/AdminDashboard';
 import DetailedAdminDashboard from './Components/DetailedAdminDashboard';
 import LoadingPage from './Components/LoadingPage';
 import PaymentForm from './Components/PaymentForm';
+import ProfilePage from './Components/ProfilePage';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +18,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -81,6 +82,15 @@ const App: React.FC = () => {
               <>
                 <PageTitle title='Payment' />
                 <PaymentForm />
+              </>
+            }
+            />
+            <Route
+            path="/profile"
+            element={
+              <>
+                <PageTitle title='Profile' />
+                <ProfilePage />
               </>
             }
             />
