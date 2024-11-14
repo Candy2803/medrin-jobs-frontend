@@ -14,6 +14,7 @@ import ProfilePage from './Components/ProfilePage';
 import Navbar from './Components/Navbar';
 import Contact from './Components/Contact';
 import Pricing from './Components/Pricing';
+// import Home from './Components/Home'
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -124,6 +125,15 @@ const App: React.FC = () => {
               </>
             }
             />
+            {/* <Route
+            path="/home"
+            element={
+              <>
+                <PageTitle title='Profile' />
+                <Home />
+              </>
+            }
+            /> */}
           <Route
             path="/admin-dashboard"
             element={
