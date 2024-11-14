@@ -1,9 +1,9 @@
-import Hero from '../components/home/Hero';
-import PopularCategories from '../components/home/PopularCategories';
+import Hero from '../Components/home/Hero';
+import PopularCategories from '../Components/home/PopularCategories';
 import FeaturedJobs from '../components/home/FeaturedJobs';
-import Testimonials from '../components/home/Testimonials';
+import Testimonials from '../Components/home/Testimonials';
 import CompanyLogos from '../components/home/CompanyLogos';
-import CallToAction from '../components/home/CallToAction';
+import CallToAction from '../Components/home/CallToAction';
 import RecentBlogs from '../components/home/RecentBlogs';
 
 const Home = () => {
