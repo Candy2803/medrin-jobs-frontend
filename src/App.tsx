@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import Navbar from './components/Navbar';
+// import Footer from './components/Footer';
+// import Home from './pages/Home';
+// import Jobs from './pages/Jobs';
 import LandingPage from './Components/LandingPage';
 import Login from './Components/Login';
 import EmployerSignUp from './Components/EmployerSignup';
@@ -11,7 +15,7 @@ import DetailedAdminDashboard from './Components/DetailedAdminDashboard';
 import LoadingPage from './Components/LoadingPage';
 import PaymentForm from './Components/PaymentForm';
 import ProfilePage from './Components/ProfilePage';
-import Navbar from './Components/Navbar';
+// import Navbar from './Components/Navbar';
 import Contact from './Components/Contact';
 import Pricing from './Components/Pricing';
 // import Home from './Components/Home'
@@ -89,15 +93,7 @@ const App: React.FC = () => {
               </>
             }
             />
-            <Route
-            path="/nav"
-            element={
-              <>
-                <PageTitle title='Payment' />
-                <Navbar />
-              </>
-            }
-            />
+            
             <Route
             path="/contact"
             element={
@@ -156,6 +152,6 @@ const App: React.FC = () => {
       </div>
     </Router>
   );
-};
+}
 
 export default App;
