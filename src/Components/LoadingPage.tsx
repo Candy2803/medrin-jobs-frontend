@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingSpinner from './LoadingSpinner';
-import Logo from './img/medrin.jpeg'
+import Logo from '../assets/medrin.jpeg'
 interface LoadingPageProps {
   logo: string;
 }

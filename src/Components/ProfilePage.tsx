@@ -1,5 +1,5 @@
 // import React from 'react';
-import profile from './img/download (2).jpeg'
+import profile from '../assets/download (2).jpeg'
 
 const ProfilePage = () => {
     return (

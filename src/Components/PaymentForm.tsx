@@ -1,8 +1,8 @@
 // import React from 'react';
-import visa from './img/visa.png'
-import mcard from './img/mastercard.png'
-import paypal from './img/paypal.png'
-import mpesa from './img/mpesa.png'
+import visa from '../assets/visa.png'
+import mcard from '../assets/mastercard.png'
+import paypal from '../assets/paypal.png'
+import mpesa from '../assets/mpesa.png'
 
 const PaymentForm = () => {
     return (

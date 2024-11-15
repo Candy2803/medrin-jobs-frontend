@@ -1,9 +1,9 @@
 // import React from 'react';
-import img from './img/download.jpeg'
-import person1 from './img/download (2).jpeg'
-import person2 from './img/download (1).jpeg'
-import person3 from './img/download (3).jpeg'
-import person4 from './img/download(4).jpeg'
+import img from '../assets/download.jpeg'
+import person1 from '../assets/download (2).jpeg'
+import person2 from '../assets/download (1).jpeg'
+import person3 from '../assets/download (3).jpeg'
+import person4 from '../assets/download(4).jpeg'
 
 
 const About = () => {
