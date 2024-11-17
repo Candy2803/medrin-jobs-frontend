@@ -13,6 +13,10 @@ import BlogPage from './Components/BlogPage';
 import BlogForm from './Components/BlogForm';
 import EmployerHomepage from './Components/EmployerHomepage';
 import JobPostingForm from './Components/JobPostingForm';
+import AdminJobs from './pages/admin/AdminJobs';
+import AdminDashboard2 from './pages/admin/AdminDashboard2';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminSettings from './pages/admin/AdminSettings';
 
 const App: React.FC = () => {
   return (
@@ -78,6 +82,42 @@ const App: React.FC = () => {
             <>
               <PageTitle title="Detailed Admin Dashboard" />
               <DetailedAdminDashboard />
+            </>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <>
+              <PageTitle title="" />
+              <AdminDashboard2 />
+            </>
+          }
+        />
+        <Route
+          path="/admin/jobs"
+          element={
+            <>
+              <PageTitle title="" />
+              <AdminJobs />
+            </>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <>
+              <PageTitle title="" />
+              <AdminUsers />
+            </>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <>
+              <PageTitle title="" />
+              <AdminSettings />
             </>
           }
         />
