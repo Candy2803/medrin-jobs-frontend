@@ -31,7 +31,7 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
+  if (isLoading) { 
     return <LoadingPage />;
   }
 
