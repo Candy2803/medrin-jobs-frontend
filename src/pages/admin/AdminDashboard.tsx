@@ -12,7 +12,7 @@ import {
   Line,
   AreaChart,
   Area,
-  ResponsiveContainer,
+  ResponsiveContainer
 } from 'recharts';
 import {
   Users,
@@ -22,7 +22,7 @@ import {
   Eye,
   UserCheck,
   Building,
-  Clock,
+  Clock
 } from 'lucide-react';
 
 const monthlyData = [
@@ -31,7 +31,7 @@ const monthlyData = [
   { name: 'Mar', applications: 2000, jobs: 9800, revenue: 2290 },
   { name: 'Apr', applications: 2780, jobs: 3908, revenue: 2000 },
   { name: 'May', applications: 1890, jobs: 4800, revenue: 2181 },
-  { name: 'Jun', applications: 2390, jobs: 3800, revenue: 2500 },
+  { name: 'Jun', applications: 2390, jobs: 3800, revenue: 2500 }
 ];
 
 const jobCategories = [
@@ -40,10 +40,10 @@ const jobCategories = [
   { name: 'Sales', value: 300 },
   { name: 'Design', value: 200 },
   { name: 'Finance', value: 278 },
-  { name: 'Other', value: 189 },
+  { name: 'Other', value: 189 }
 ];
 
-const AdminDashboard2 = () => {
+const AdminDashboard = () => {
   const [timeRange, setTimeRange] = useState('month');
 
   return (
@@ -125,12 +125,7 @@ const AdminDashboard2 = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                fill="#3B82F6"
-                stroke="#2563EB"
-              />
+              <Area type="monotone" dataKey="revenue" fill="#3B82F6" stroke="#2563EB" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -174,4 +169,4 @@ const AdminDashboard2 = () => {
   );
 };
 
-export default AdminDashboard2;
+export default AdminDashboard;

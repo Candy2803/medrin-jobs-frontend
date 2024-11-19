@@ -19,7 +19,7 @@ const jobs: Job[] = [
     location: 'New York, USA',
     type: 'Full Time',
     status: 'active',
-    postedAt: '2024-03-15',
+    postedAt: '2024-03-15'
   },
   {
     id: '2',
@@ -28,7 +28,7 @@ const jobs: Job[] = [
     location: 'San Francisco, USA',
     type: 'Full Time',
     status: 'active',
-    postedAt: '2024-03-14',
+    postedAt: '2024-03-14'
   },
   {
     id: '3',
@@ -37,17 +37,16 @@ const jobs: Job[] = [
     location: 'Remote',
     type: 'Full Time',
     status: 'expired',
-    postedAt: '2024-02-15',
-  },
+    postedAt: '2024-02-15'
+  }
 ];
 
 const AdminJobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const filteredJobs = jobs.filter((job) => {
-    const matchesSearch =
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.company.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -97,24 +96,12 @@ const AdminJobs = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Job
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Location
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Posted
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posted</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -126,26 +113,18 @@ const AdminJobs = () => {
                     <div className="text-sm text-gray-500">{job.company}</div>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {job.location}
-                </td>
+                <td className="px-6 py-4 text-sm text-gray-500">{job.location}</td>
                 <td className="px-6 py-4 text-sm text-gray-500">{job.type}</td>
                 <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      job.status === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : job.status === 'expired'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    job.status === 'active' ? 'bg-green-100 text-green-800' :
+                    job.status === 'expired' ? 'bg-red-100 text-red-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
                     {job.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {job.postedAt}
-                </td>
+                <td className="px-6 py-4 text-sm text-gray-500">{job.postedAt}</td>
                 <td className="px-6 py-4 text-right space-x-2">
                   <button className="text-blue-600 hover:text-blue-800">
                     <Edit className="h-5 w-5" />
