@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 export interface Job {
     id: string;
     title: string;
@@ -41,3 +42,21 @@ export interface Job {
     name: string;
     logo: string;
   }
+=======
+export interface JobApplication {
+  id: string;
+  jobId: string;
+  userId: string;
+  status: 'pending' | 'approved' | 'rejected';
+  appliedAt: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  resumeUrl: string;
+  coverLetterUrl?: string;
+  summary?: string;
+}
+
+// Add other existing interfaces...
+>>>>>>> 177c1dadf98225791f664df8563c8e76eaea3d93
