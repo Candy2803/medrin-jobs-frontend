@@ -38,7 +38,7 @@ const PostJobWizard = () => {
 		setIsLoading(true);
 		try {
 			
-			const response = await fetch("/api/job/postJob", {
+			const response = await fetch("http://localhost:5000/job/postJob", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -64,7 +64,6 @@ const PostJobWizard = () => {
       
       }
 
-			// Reset wizard to initial state on success
 			setStep(1);
 			setJobData({
 				title: "",
@@ -81,7 +80,7 @@ const PostJobWizard = () => {
 				category: "",
 			});
 		} catch (error: any) {
-			// Show error alert using SweetAlert2
+
 			Swal.fire({
 				title: "Error!",
 				text:
