@@ -1,3 +1,5 @@
+import { Elements } from '@stripe/react-stripe-js';
+import { StripeCardElement } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 
@@ -30,7 +32,7 @@ class PaymentService {
       // Confirm payment
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-          card: elements.getElement('card'),
+          card: elements.getElement('card') as StripeCardElement,
           billing_details: {
             // Add billing details here
           },
