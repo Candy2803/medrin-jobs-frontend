@@ -17,7 +17,7 @@ const Hero = () => {
     setLoading(true);
     const fetchJobs = async () => {
       try {
-        const response = await fetch("http://localhost:5000/job");
+        const response = await fetch("http://localhost:5555/job");
         const data = await response.json();
         setJobsAmount(data.length || []);
       } catch (error) {
@@ -32,7 +32,7 @@ const Hero = () => {
 		setLoading(true);
 		try {
 			const response = await fetch(
-				`http://localhost:5000/job/search?query=${query}&location=${location}`
+				`http://localhost:5555/job/search?query=${query}&location=${location}`
 			);
 			const data = await response.json();
 			setJobs(data || []);
