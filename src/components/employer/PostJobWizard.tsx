@@ -5,9 +5,11 @@ import ApplicationProcessForm from './forms/ApplicationProcessForm';
 import ReviewSubmit from './forms/ReviewSubmit';
 import WizardProgress from './WizardProgress';
 import { JobPostingData } from '../../types/employer';
+import Swal from 'sweetalert2';
 
 const PostJobWizard = () => {
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [jobData, setJobData] = useState<JobPostingData>({
     title: '',
     company: '',
@@ -19,7 +21,8 @@ const PostJobWizard = () => {
     applicationDeadline: '',
     applicationInstructions: '',
     requiredDocuments: [],
-    status: 'draft'
+    status: 'draft',
+    category: ''
   });
 
   const handleNext = () => {
@@ -31,13 +34,65 @@ const PostJobWizard = () => {
   };
 
   const handleSubmit = async () => {
-    try {
-      // API call to save job posting
-      console.log('Submitting job posting:', jobData);
-      // Redirect to success page or dashboard
-    } catch (error) {
-      console.error('Error submitting job posting:', error);
-    }
+		
+		setIsLoading(true);
+		try {
+			
+			const response = await fetch("/api/job/postJob", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+        },
+        credentials: "include",
+				body: JSON.stringify(jobData),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Failed to post job.");
+			}
+
+			const data = await response.json();
+
+      if (response.status === 201) {
+        Swal.fire({
+          title: "Success!",
+          text: data.message || "Your job has been posted successfully.",
+          icon: "success",
+          confirmButtonText: "Okay",
+        });
+      
+      }
+
+			// Reset wizard to initial state on success
+			setStep(1);
+			setJobData({
+				title: "",
+				company: "",
+				description: "",
+				requirements: [],
+				location: "",
+				salaryRange: { min: "", max: "" },
+				employmentType: "",
+				applicationDeadline: "",
+				applicationInstructions: "",
+				requiredDocuments: [],
+				status: "draft",
+				category: "",
+			});
+		} catch (error: any) {
+			// Show error alert using SweetAlert2
+			Swal.fire({
+				title: "Error!",
+				text:
+					error.message || "An error occurred while posting the job.",
+				icon: "error",
+				confirmButtonText: "Retry",
+			});
+		} finally {
+			// Reset loading state
+			setIsLoading(false);
+		}
   };
 
   const steps = [

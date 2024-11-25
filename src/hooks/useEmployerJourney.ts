@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { employerService } from '../services/mockEmployerService';
-import { useAuthStore } from '../store/authStore';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { employerService } from "../services/mockEmployerService";
+import { useLoginMutation } from "../state/api";
 
 export const useEmployerJourney = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login: setAuthUser } = useAuthStore();
+  const [login] = useLoginMutation();
 
   const registerEmployer = async (data: {
     email: string;
@@ -19,15 +19,13 @@ export const useEmployerJourney = () => {
     setError(null);
     try {
       const user = await employerService.register(data);
-      setAuthUser({
-        id: user.id,
+      login({
         email: user.email,
-        name: user.name,
-        type: 'employer'
+        password: user.password,
       });
-      navigate('/employer/dashboard');
+      navigate("/employer/dashboard");
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -38,15 +36,15 @@ export const useEmployerJourney = () => {
     setError(null);
     try {
       const user = await employerService.login(email, password);
-      setAuthUser({
+      login({
         id: user.id,
         email: user.email,
         name: user.name,
-        type: 'employer'
+        type: "employer",
       });
-      navigate('/employer/dashboard');
+      navigate("/employer/dashboard");
     } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      setError("Login failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -58,14 +56,14 @@ export const useEmployerJourney = () => {
     try {
       const canPost = await employerService.useJobPost();
       if (!canPost) {
-        navigate('/pricing');
+        navigate("/pricing");
         return false;
       }
       // Simulate job posting
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return true;
     } catch (err) {
-      setError('Failed to post job. Please try again.');
+      setError("Failed to post job. Please try again.");
       return false;
     } finally {
       setIsLoading(false);
@@ -77,6 +75,7 @@ export const useEmployerJourney = () => {
     loginEmployer,
     postJob,
     isLoading,
-    error
+    error,
   };
 };
+

@@ -9,20 +9,14 @@ interface ReviewSubmitProps {
   onSubmit: () => void;
 }
 
-const ReviewSubmit = ({ data, onBack }: ReviewSubmitProps) => {
+const ReviewSubmit = ({ data, onBack, onSubmit }: ReviewSubmitProps) => {
   const navigate = useNavigate();
   const { postJob, isLoading } = useEmployerJourney();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = await postJob(data);
-    if (success) {
-      navigate('/employer/jobs');
-    }
-  };
+
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={onSubmit} className="space-y-8">
       {/* ... rest of the review form remains the same ... */}
       
       <div className="flex justify-between">

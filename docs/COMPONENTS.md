@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # MedrinJobs Component Documentation
 
 ## File Structure
@@ -47,7 +49,7 @@ src/
 │   │   ├── AdminSettings.tsx
 │   ├── auth/
 │   │   ├── Login.tsx
-│   │   ├── Register.tsx
+│   │   ├── .tsx
 │   ├── employer/
 │   │   ├── EmployerDashboard.tsx
 │   │   ├── EmployerJobs.tsx
@@ -76,108 +78,122 @@ src/
 ### Authentication Components
 
 #### `src/components/auth/AuthModal.tsx`
-- Handles both login and registration flows
-- Supports user type selection (jobseeker/employer)
-- Integrates with `mockAuthService`
-- Shows validation errors
-- Redirects based on user type after authentication
+
+-   Handles both login and registration flows
+-   Supports user type selection (jobseeker/employer)
+-   Integrates with `mockAuthService`
+-   Shows validation errors
+-   Redirects based on user type after authentication
 
 #### `src/components/auth/ProtectedRoute.tsx`
-- Guards routes based on user type
-- Redirects to login if not authenticated
-- Validates user type matches required type
+
+-   Guards routes based on user type
+-   Redirects to login if not authenticated
+-   Validates user type matches required type
 
 ### Job-Related Components
 
 #### `src/components/jobs/JobList.tsx`
-- Displays paginated job listings
-- Supports filtering and search
-- Shows job details on click
-- Handles job saving/bookmarking
-- Integrates with application process
+
+-   Displays paginated job listings
+-   Supports filtering and search
+-   Shows job details on click
+-   Handles job saving/bookmarking
+-   Integrates with application process
 
 #### `src/components/jobs/ApplicationForm.tsx`
-- Multi-step application process
-- Resume/CV upload
-- Optional cover letter
-- Optional skills summary
-- Shows application status feedback
+
+-   Multi-step application process
+-   Resume/CV upload
+-   Optional cover letter
+-   Optional skills summary
+-   Shows application status feedback
 
 ### Employer Components
 
 #### `src/components/employer/PostJobWizard.tsx`
-- Multi-step job posting form
-- Category selection
-- Job details input
-- Application requirements
-- Preview and submission
+
+-   Multi-step job posting form
+-   Category selection
+-   Job details input
+-   Application requirements
+-   Preview and submission
 
 #### `src/components/employer/BulkJobPostingModal.tsx`
-- JSON file upload for multiple jobs
-- Validation of job data
-- Progress feedback
-- Error handling
+
+-   JSON file upload for multiple jobs
+-   Validation of job data
+-   Progress feedback
+-   Error handling
 
 ### Admin Components
 
 #### `src/components/admin/AdminSidebar.tsx`
-- Navigation for admin section
-- User management submenu
-- Payment tracking
-- Job moderation tools
-- Settings access
+
+-   Navigation for admin section
+-   User management submenu
+-   Payment tracking
+-   Job moderation tools
+-   Settings access
 
 ### Payment Components
 
 #### `src/components/pricing/PaymentModal.tsx`
-- Supports card payments via Stripe
-- M-Pesa integration for Kenyan users
-- Shows payment confirmation
-- Handles payment errors
+
+-   Supports card payments via Stripe
+-   M-Pesa integration for Kenyan users
+-   Shows payment confirmation
+-   Handles payment errors
 
 ### Home Page Components
 
 #### `src/components/home/Hero.tsx`
-- Search functionality
-- Popular searches display
-- Job count statistics
+
+-   Search functionality
+-   Popular searches display
+-   Job count statistics
 
 #### `src/components/home/Testimonials.tsx`
-- Carousel with 5 testimonials
-- Auto-play functionality
-- Manual navigation
-- Responsive design
+
+-   Carousel with 5 testimonials
+-   Auto-play functionality
+-   Manual navigation
+-   Responsive design
 
 ## State Management
 
 ### `src/store/authStore.ts`
+
 ```typescript
 interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (user: User) => void;
-  logout: () => void;
-  updateProfile: (profile: Partial<User['profile']>) => void;
+	user: User | null;
+	isAuthenticated: boolean;
+	login: (user: User) => void;
+	logout: () => void;
+	updateProfile: (profile: Partial<User["profile"]>) => void;
 }
 ```
 
 ## Services
 
 ### `src/services/paymentService.ts`
-- Stripe integration
-- M-Pesa STK Push
-- Payment verification
-- Transaction history
+
+-   Stripe integration
+-   M-Pesa STK Push
+-   Payment verification
+-   Transaction history
 
 ### `src/services/mockEmployerService.ts`
-- Job posting management
-- Plan subscription handling
-- Free trial tracking
-- Bulk upload processing
+
+-   Job posting management
+-   Plan subscription handling
+-   Free trial tracking
+-   Bulk upload processing
 
 ## User Flows
 
 ### Job Seeker Flow
+
 1. Registration/Login (`AuthModal.tsx`)
 2. Profile Creation (`Profile.tsx`)
 3. Job Search (`JobList.tsx`)
@@ -185,6 +201,7 @@ interface AuthState {
 5. Application Tracking (`Applications.tsx`)
 
 ### Employer Flow
+
 1. Registration/Login (`AuthModal.tsx`)
 2. Plan Selection (`Pricing.tsx`)
 3. Job Posting (`PostJobWizard.tsx`)
@@ -192,6 +209,7 @@ interface AuthState {
 5. Candidate Management
 
 ### Admin Flow
+
 1. Login (`Login.tsx`)
 2. Dashboard Overview (`AdminDashboard.tsx`)
 3. Content Moderation (`AdminJobs.tsx`)
@@ -201,33 +219,38 @@ interface AuthState {
 ## Pricing Plans
 
 ### Implementation (`src/pages/Pricing.tsx`)
-- Free Trial: 3 job posts
-- One Off: $15 per post
-- Starter: $100/month (20 posts)
-- Pro: $150/month (unlimited)
-- Enterprise: $1000/year (custom features)
+
+-   Free Trial: 3 job posts
+-   One Off: $15 per post
+-   Starter: $100/month (20 posts)
+-   Pro: $150/month (unlimited)
+-   Enterprise: $1000/year (custom features)
 
 ### Features
-- Annual billing (15% discount)
-- Currency conversion (USD/KES)
-- M-Pesa integration
-- Bulk posting capabilities
+
+-   Annual billing (15% discount)
+-   Currency conversion (USD/KES)
+-   M-Pesa integration
+-   Bulk posting capabilities
 
 ## Mobile Responsiveness
-- Tailwind breakpoints
-- Responsive navigation
-- Touch-friendly interfaces
-- Optimized forms
+
+-   Tailwind breakpoints
+-   Responsive navigation
+-   Touch-friendly interfaces
+-   Optimized forms
 
 ## Error Handling
-- Form validation
-- Payment errors
-- API failures
-- Authentication errors
-- File upload validation
+
+-   Form validation
+-   Payment errors
+-   API failures
+-   Authentication errors
+-   File upload validation
 
 ## Security
-- Protected routes
-- Role-based access
-- Payment data security
-- Input sanitization
+
+-   Protected routes
+-   Role-based access
+-   Payment data security
+-   Input sanitization

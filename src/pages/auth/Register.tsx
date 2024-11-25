@@ -1,60 +1,123 @@
-import { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Mail, Lock, User, Building, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import { mockAuthService } from '../../services/mockAuthService';
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { AlertCircle } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
+import { useState } from "react";
+import VerificationDialog from "@/components/modals/VerificationDialog";
+import { useDispatch, useSelector } from "react-redux";
+import { AuthState, setCredentials } from "@/state";
+import { useRegisterMutation } from "@/state/api";
+
+// Zod schema for form validation
+const formSchema = z
+  .object({
+    email: z
+      .string()
+      .email("Invalid email address")
+      .min(1, "Email is required"),
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .min(1, "Password is required"),
+    confirmPassword: z.string().min(1, "Confirm Password is required"),
+    name: z
+      .string()
+      .min(2, "Name must be at least 2 characters")
+      .min(1, "Name is required"),
+    company: z.string().optional(),
+    role: z
+      .enum(["employer", "jobseeker"])
+      .refine((role) => role === "employer" || role === "jobseeker", {
+        message: "Role is required",
+      }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Passwords must match",
+        path: ["confirmPassword"], // Points error to the confirmPassword field
+      });
+    }
+  });
 
 const Register = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuthStore();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    name: '',
-    company: '',
-    userType: (new URLSearchParams(location.search).get('type') || 'jobseeker') as 'employer' | 'jobseeker'
+  const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const { user } = useSelector((state: { auth: AuthState }) => state.auth);
+
+  const [register, { isLoading }] = useRegisterMutation();
+  const dispatch = useDispatch();
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      name: "",
+      company: "",
+      role: "",
+    },
   });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
-    setIsLoading(true);
-    setError('');
-
+  // const onSubmit = async (data: any) => {
+  //   try {
+  //     if (data.role === "employer") {
+  //       navigate("/employer/dashboard");
+  //     } else {
+  //       navigate("/dashboard");
+  //     }
+  //   } catch (err) {
+  //     console.error("Registration failed", err);
+  //   }
+  // };
+  const onSubmit = async (data: any) => {
     try {
-      const response = await mockAuthService.register({
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-        userType: formData.userType,
-        company: formData.company
-      });
+      /* const response =  */ await register(data).unwrap();
 
-      if (response.success && response.user) {
-        login(response.user);
-        
-        // Redirect based on user type
-        if (response.user.type === 'employer') {
-          navigate('/employer/dashboard');
-        } else {
-          navigate('/jobseeker/dashboard');
-        }
-      } else {
-        setError(response.error || 'Registration failed');
-      }
+      // const { userData, accessToken } = response;
+      //
+      // dispatch(
+      //   setCredentials({
+      //     user: {
+      //       id: userData.id,
+      //       email: userData.email,
+      //       name: userData.name,
+      //       role: userData.role,
+      //       image: userData.image,
+      //       isVerified: userData.isVerified,
+      //     },
+      //     accessToken,
+      //     isAuthenticated: true,
+      //   }),
+      // );
+      setIsDialogOpen(true); // Open the verification dialog
     } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error("Registration failed", err);
     }
   };
 
@@ -69,11 +132,8 @@ const Register = () => {
           Create your account
         </h2>
         <p className="mt-2 text-center text-gray-600">
-          Already have an account?{' '}
-          <Link 
-            to={`/login${location.search}`}
-            className="text-blue-600 hover:text-blue-500"
-          >
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:text-blue-500">
             Sign in
           </Link>
         </p>
@@ -81,124 +141,159 @@ const Register = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="flex items-center p-4 bg-red-50 rounded-md text-red-700">
-                <AlertCircle className="h-5 w-5 mr-2" />
-                {error}
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                I want to
-              </label>
-              <select
-                value={formData.userType}
-                onChange={(e) => setFormData({ ...formData, userType: e.target.value as any })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="jobseeker">Find a job</option>
-                <option value="employer">Hire talent</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <div className="mt-1 relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            {formData.userType === 'employer' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Company Name
-                </label>
-                <div className="mt-1 relative">
-                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="text"
-                    required
-                    value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {Object.values(errors).length > 0 && (
+                <div className="flex items-center">
+                  <AlertCircle className="h-5 w-5 mr-2 text-red-600" />
+                  <span className="text-red-600 text-sm">
+                    You have an error/errors in the form
+                  </span>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1 relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+              {/* Role Select */}
+              <FormField
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>I want to:</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select one" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="employer">Hire Talent</SelectItem>
+                        <SelectItem value="jobseeker">Job Seeker</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+              {/* Full Name */}
+              <FormField
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    {errors.name && (
+                      <p className="text-red-600 text-xs">
+                        {errors.name.message}
+                      </p>
+                    )}
+                    <FormControl>
+                      <Input {...field} placeholder="Your full name" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <div className="mt-1 relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  type="password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+              {/* Company Name */}
+              <FormField
+                name="company"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    {errors.company && (
+                      <p className="text-red-600 text-xs">
+                        {errors.company.message}
+                      </p>
+                    )}
+                    <FormControl>
+                      <Input {...field} placeholder="Your company name" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            <div>
-              <button
+              {/* Email Address */}
+              <FormField
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    {errors.email && (
+                      <p className="text-red-600 text-xs">
+                        {errors.email.message}
+                      </p>
+                    )}
+                    <FormControl>
+                      <Input {...field} type="email" placeholder="Your email" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {/* Password */}
+              <FormField
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    {errors.password && (
+                      <p className="text-red-600 text-xs">
+                        {errors.password.message}
+                      </p>
+                    )}
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="password"
+                        placeholder="Your password"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {/* Confirm Password */}
+              <FormField
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    {errors.confirmPassword && (
+                      <p className="text-red-600 text-xs">
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="password"
+                        placeholder="Confirm password"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {/* Submit Button */}
+              <Button
                 type="submit"
+                onClick={handleSubmit}
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
+                className="w-full bg-blue-700 hover:bg-blue-800"
               >
-                {isLoading ? 'Creating account...' : 'Create account'}
-              </button>
-            </div>
-          </form>
+                {isLoading ? "Creating account..." : "Create account"}
+              </Button>
+            </form>
+          </Form>
         </div>
       </div>
+
+      {isDialogOpen && (
+        <VerificationDialog
+          email={user!.email}
+          onClose={() => {
+            setIsDialogOpen(false);
+            navigate("/login"); // Redirect to login after verification
+          }}
+        />
+      )}
     </div>
   );
-}
+};
 
 export default Register;

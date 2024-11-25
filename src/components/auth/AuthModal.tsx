@@ -1,272 +1,371 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Mail, Lock, User, Building, Briefcase } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import { useEmployerJourney } from '../../hooks/useEmployerJourney';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { useLoginMutation, useRegisterMutation } from "../../state/api";
+import { AuthState, setCredentials } from "@/state";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog"; // Update import path to match your project structure
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import VerificationDialog from "../modals/VerificationDialog";
+import { Bounce, toast } from "react-toastify";
+
+// Validation schemas
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const registerSchema = z
+  .object({
+    email: z
+      .string()
+      .email("Invalid email address")
+      .min(1, "Email is required"),
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .min(1, "Password is required"),
+    confirmPassword: z.string().min(1, "Confirm Password is required"),
+    name: z
+      .string()
+      .min(2, "Name must be at least 2 characters")
+      .min(1, "Name is required"),
+    role: z.enum(["employer", "jobseeker"]),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Passwords must match",
+        path: ["confirmPassword"],
+      });
+    }
+  });
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
+type AuthFormValues = LoginFormValues & Partial<RegisterFormValues>;
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialView?: 'login' | 'register' | 'user-type';
+  initialView: "login" | "register" | "user-type";
 }
 
-const AuthModal = ({ isOpen, onClose, initialView = 'login' }: AuthModalProps) => {
+const AuthModal: React.FC<AuthModalProps> = ({
+  isOpen,
+  onClose,
+  initialView,
+}) => {
+  const [authMode, setAuthMode] = useState<"login" | "register">(
+    initialView === "user-type" ? "login" : initialView,
+  );
+  const [isVerificationDialogOpen, setIsVerificationDialogOpen] =
+    useState(false);
+
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [registerErrorMessage, setRegisterErrorMessage] = useState<
+    string | null
+  >(null);
+  const { user } = useSelector((state: { auth: AuthState }) => state.auth);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [view, setView] = useState<'login' | 'register' | 'user-type'>(initialView);
-  const [userType, setUserType] = useState<'jobseeker' | 'employer' | null>(null);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    company: '',
-    confirmPassword: '',
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
+  const [register, { isLoading: isRegistering }] = useRegisterMutation();
+
+  const {
+    register: formRegister,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    clearErrors,
+    formState: { errors },
+  } = useForm<AuthFormValues>({
+    resolver: zodResolver(authMode === "login" ? loginSchema : registerSchema),
   });
-  const [error, setError] = useState('');
-  const { registerEmployer, loginEmployer, isLoading } = useEmployerJourney();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (view === 'register' && formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
+  const handleLogin = async (data: LoginFormValues) => {
     try {
-      if (view === 'login') {
-        await loginEmployer(formData.email, formData.password);
-      } else if (view === 'register' && userType === 'employer') {
-        await registerEmployer({
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          company: formData.company
-        });
-      }
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      }).unwrap();
+
+      const { userData, accessToken } = response;
+
+      dispatch(
+        setCredentials({
+          user: userData,
+          accessToken,
+          isAuthenticated: true,
+        }),
+      );
+
+      navigate(userData.role === "admin" ? "/admin" : "/dashboard");
       onClose();
+      setLoginError(null); // Clear login error on success
     } catch (err) {
-      setError('Authentication failed. Please try again.');
+      if (isFetchBaseQueryError(err)) {
+        const serverError = err.data as { error: string };
+        setLoginError(serverError.error || "Login failed. Please try again.");
+      } else {
+        setLoginError("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
+  const handleRegister = async (data: RegisterFormValues) => {
+    try {
+      const response = await register({
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        name: data.name,
+        role: data.role,
+      }).unwrap();
+
+      setRegisterErrorMessage(null); // Clear register error on success
+
+      toast.success("Registration was successful!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+
+      const { userData, accessToken } = response;
+
+      dispatch(
+        setCredentials({
+          user: userData,
+          accessToken,
+          isAuthenticated: true,
+        }),
+      );
+
+      setIsVerificationDialogOpen(true);
+      onClose();
+    } catch (err) {
+      if (isFetchBaseQueryError(err)) {
+        const serverError = err.data as { error: string };
+        setRegisterErrorMessage(
+          serverError.error || "Registration failed. Please try again.",
+        );
+      } else {
+        setRegisterErrorMessage(
+          "An unexpected error occurred. Please try again.",
+        );
+      }
+    }
+  };
+
+  function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
+    return (
+      typeof error === "object" &&
+      error != null &&
+      "status" in error &&
+      "data" in error
+    );
+  }
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-xl max-w-md w-full overflow-hidden"
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {authMode === "login" ? "Sign In" : "Register"}
+            </DialogTitle>
+          </DialogHeader>
+
+          {loginError && authMode === "login" && (
+            <p className="text-red-500">{loginError}</p>
+          )}
+
+          {registerErrorMessage && authMode === "register" && (
+            <p className="text-red-500">{registerErrorMessage}</p>
+          )}
+
+          <form
+            onSubmit={handleSubmit(
+              authMode === "login" ? handleLogin : handleRegister,
+            )}
+            className="space-y-4"
           >
-            <div className="relative">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-white">
-                    {view === 'login' ? 'Welcome Back' : 
-                     view === 'register' ? 'Create Account' : 
-                     'Choose Account Type'}
-                  </h2>
-                  <button onClick={onClose} className="text-white hover:text-gray-200">
-                    <X className="h-6 w-6" />
-                  </button>
-                </div>
-                <p className="text-blue-100 mt-2">
-                  {view === 'login' ? 'Sign in to access your account' :
-                   view === 'register' ? 'Join our community today' :
-                   'Select how you want to use Medrin Jobs'}
+            {authMode === "register" && (
+              <div>
+                <Select
+                  onValueChange={(value) => {
+                    setValue("role", value as "employer" | "jobseeker"); // Manually set the value in react-hook-form
+                    clearErrors("role");
+                  }}
+                  value={watch("role") || ""} // Use watch to get the current value of "role"
+                >
+                  <SelectTrigger className=" w-full">
+                    <SelectValue placeholder="What do you want to do?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="employer">Hire Talent</SelectItem>
+                    <SelectItem value="jobseeker">Find Work</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.role && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.role.message}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {authMode === "register" && (
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  {...formRegister("name")}
+                  placeholder="Your name"
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                {...formRegister("email")}
+                placeholder="Your email"
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
                 </p>
-              </div>
-
-              <div className="p-6">
-                {error && (
-                  <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-                    {error}
-                  </div>
-                )}
-
-                {view === 'user-type' ? (
-                  <div className="space-y-4">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => {
-                        setUserType('jobseeker');
-                        setView('register');
-                      }}
-                      className="w-full flex items-center justify-between p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 group"
-                    >
-                      <div className="flex items-center">
-                        <div className="bg-blue-100 p-3 rounded-lg group-hover:bg-blue-600">
-                          <Briefcase className="h-6 w-6 text-blue-600 group-hover:text-white" />
-                        </div>
-                        <div className="ml-4 text-left">
-                          <h3 className="font-semibold text-gray-900">I'm looking for work</h3>
-                          <p className="text-sm text-gray-600">Find your dream job</p>
-                        </div>
-                      </div>
-                      <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600" />
-                    </motion.button>
-
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => {
-                        setUserType('employer');
-                        setView('register');
-                      }}
-                      className="w-full flex items-center justify-between p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 group"
-                    >
-                      <div className="flex items-center">
-                        <div className="bg-blue-100 p-3 rounded-lg group-hover:bg-blue-600">
-                          <Building className="h-6 w-6 text-blue-600 group-hover:text-white" />
-                        </div>
-                        <div className="ml-4 text-left">
-                          <h3 className="font-semibold text-gray-900">I'm hiring talent</h3>
-                          <p className="text-sm text-gray-600">Post jobs and find candidates</p>
-                        </div>
-                      </div>
-                      <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600" />
-                    </motion.button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    {view === 'register' && (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Full Name
-                          </label>
-                          <div className="relative">
-                            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                            <input
-                              type="text"
-                              required
-                              value={formData.name}
-                              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="John Doe"
-                            />
-                          </div>
-                        </div>
-
-                        {userType === 'employer' && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Company Name
-                            </label>
-                            <div className="relative">
-                              <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                              <input
-                                type="text"
-                                required
-                                value={formData.company}
-                                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Company Name"
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email Address
-                      </label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input
-                          type="email"
-                          required
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="you@example.com"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Password
-                      </label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input
-                          type="password"
-                          required
-                          value={formData.password}
-                          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="••••••••"
-                        />
-                      </div>
-                    </div>
-
-                    {view === 'register' && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Confirm Password
-                        </label>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                          <input
-                            type="password"
-                            required
-                            value={formData.confirmPassword}
-                            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="••••••••"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
-                    >
-                      {isLoading ? 'Processing...' : view === 'login' ? 'Sign In' : 'Create Account'}
-                    </button>
-                  </form>
-                )}
-
-                {view !== 'user-type' && (
-                  <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
-                      {view === 'login' ? (
-                        <>
-                          Don't have an account?{' '}
-                          <button
-                            onClick={() => setView('user-type')}
-                            className="text-blue-600 hover:underline"
-                          >
-                            Sign up
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          Already have an account?{' '}
-                          <button
-                            onClick={() => setView('login')}
-                            className="text-blue-600 hover:underline"
-                          >
-                            Sign in
-                          </button>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-          </motion.div>
-        </div>
+
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                {...formRegister("password")}
+                placeholder="Your password"
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {authMode === "register" && (
+              <div>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  {...formRegister("confirmPassword")}
+                  placeholder="Confirm your password"
+                />
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <Button
+              className="bg-blue-600 hover:bg-blue-700"
+              type="submit"
+              disabled={isLoggingIn || isRegistering}
+            >
+              {isLoggingIn || isRegistering
+                ? "Processing..."
+                : authMode === "login"
+                  ? "Sign In"
+                  : "Register"}
+            </Button>
+          </form>
+
+          <DialogFooter>
+            {authMode === "login" ? (
+              <p>
+                Don't have an account?{" "}
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    setAuthMode("register");
+                    reset();
+                    setLoginError(null); // Clear login error
+                  }}
+                >
+                  Register
+                </Button>
+              </p>
+            ) : (
+              <p>
+                Already have an account?{" "}
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    setAuthMode("login");
+                    reset();
+                    setRegisterErrorMessage(null); // Clear register error
+                  }}
+                >
+                  Sign In
+                </Button>
+              </p>
+            )}
+          </DialogFooter>
+
+          <DialogClose />
+        </DialogContent>
+      </Dialog>
+
+      {isVerificationDialogOpen && (
+        <VerificationDialog
+          email={user!.email}
+          onClose={() => {
+            setIsVerificationDialogOpen(false);
+            navigate("/login"); // Redirect to login after verification
+          }}
+        />
       )}
-    </AnimatePresence>
+    </>
   );
 };
 

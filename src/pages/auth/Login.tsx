@@ -1,56 +1,77 @@
-import { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Mail, Lock, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
-import { mockAuthService } from '../../services/mockAuthService';
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useLoginMutation } from "../../state/api";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../state";
+
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuthStore();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    userType: (new URLSearchParams(location.search).get('type') || 'jobseeker') as 'employer' | 'jobseeker' | 'admin'
+  const dispatch = useDispatch();
+  const [login, { isLoading }] = useLoginMutation();
+
+  // Initialize react-hook-form
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
   });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
+  const onSubmit = async (data: LoginFormValues) => {
     try {
-      const response = await mockAuthService.login(
-        formData.email,
-        formData.password,
-        formData.userType
+      const response = await login(data).unwrap();
+
+      const { userData, accessToken } = response;
+  localStorage.setItem("accessToken", accessToken);
+      dispatch(
+        setCredentials({
+          user: {
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role.toLowerCase(),
+            image: userData.image,
+            isVerified: userData.isVerified,
+          },
+          accessToken,
+          isAuthenticated: true,
+        }),
       );
 
-      if (response.success && response.user) {
-        login(response.user);
-        
-        // Redirect based on user type
-        switch (response.user.type) {
-          case 'admin':
-            navigate('/admin');
-            break;
-          case 'employer':
-            navigate('/employer/dashboard');
-            break;
-          case 'jobseeker':
-            navigate('/jobseeker/dashboard');
-            break;
-        }
-      } else {
-        setError(response.error || 'Login failed');
+      const userRole = response?.userData?.role;
+
+      switch (userRole) {
+        case "admin":
+          navigate("/admin");
+          break;
+        case "employer":
+          navigate("/employer/dashboard");
+          break;
+        case "jobseeker":
+        default:
+          navigate("/dashboard");
+          break;
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error("Login failed:", err);
     }
   };
 
@@ -65,11 +86,8 @@ const Login = () => {
           Sign in to your account
         </h2>
         <p className="mt-2 text-center text-gray-600">
-          Or{' '}
-          <Link 
-            to={`/register${location.search}`} 
-            className="text-blue-600 hover:text-blue-500"
-          >
+          Or{" "}
+          <Link to="/register" className="text-blue-600 hover:text-blue-500">
             create a new account
           </Link>
         </p>
@@ -77,93 +95,61 @@ const Login = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="flex items-center p-4 bg-red-50 rounded-md text-red-700">
-                <AlertCircle className="h-5 w-5 mr-2" />
-                {error}
-              </div>
-            )}
+          {/* Pass the useForm instance to Form */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormItem>
+                <FormLabel>Email address</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    {...form.register("email")}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.email?.message}
+                </FormMessage>
+              </FormItem>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                I am a
-              </label>
-              <select
-                value={formData.userType}
-                onChange={(e) => setFormData({ ...formData, userType: e.target.value as any })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="jobseeker">Job Seeker</option>
-                <option value="employer">Employer</option>
-                <option value="admin">Admin/Staff</option>
-              </select>
-            </div>
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Enter your password"
+                    {...form.register("password")}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.password?.message}
+                </FormMessage>
+              </FormItem>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1 relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <Link to="/forgot-password" className="text-blue-600 hover:text-blue-500">
+              <div className="flex items-center justify-between">
+                <Checkbox id="remember" />
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-blue-600 hover:text-blue-500"
+                >
                   Forgot your password?
                 </Link>
               </div>
-            </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
-              >
-                {isLoading ? 'Signing in...' : 'Sign in'}
-              </button>
-            </div>
-          </form>
+              <div>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 w-full"
+                  type="submit"
+                >
+                  {isLoading ? "Signing in..." : "Sign in"}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Login;
