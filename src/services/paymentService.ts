@@ -1,121 +1,188 @@
-import { Elements } from '@stripe/react-stripe-js';
-import { StripeCardElement } from '@stripe/stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import axios from 'axios';
+/** @format */
+
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
+import type { StripeCardElement } from "@stripe/stripe-js";
+import { CardElement } from "@stripe/react-stripe-js";
+import { Stripe } from "@stripe/stripe-js";
+import { Bounce, toast } from "react-toastify";
 
 interface PaymentResponse {
-  success: boolean;
-  message: string;
-  transactionId?: string;
+	success: boolean;
+	message: any;
+	transactionId?: string;
+	clientSecret?: string;
+	accessToken?: string;
+	
 }
 
 class PaymentService {
-  private stripe: Promise<any>;
+	private stripe: Promise<Stripe | null>; // This will store a Promise
+	private accessToken: string | null = null;
+	constructor() {
+		this.stripe = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || "");
+	}
+	private async getAccessToken(): Promise<string | null> {
+		if (this.accessToken) {
+			// Return the token if it's already set
+			return this.accessToken;
+		}
 
-  constructor() {
-    this.stripe = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
-  }
+		// Otherwise, fetch it from localStorage and store it
+		const authData = JSON.parse(
+			localStorage.getItem("persist:auth") || "{}"
+		);
+		const data = authData.auth;
+		const parsedToken = JSON.parse(data);
+		this.accessToken = parsedToken.token || null; // Store token
+		return this.accessToken;
+	}
 
-  // Process card payment with Stripe
-  async processCardPayment(amount: number, currency: string): Promise<PaymentResponse> {
-    try {
-      const stripe = await this.stripe;
-      
-      // Create payment intent
-      const response = await axios.post('/api/create-payment-intent', {
-        amount,
-        currency
-      });
+	private async getStripe(): Promise<Stripe | null> {
+		return await this.stripe;
+	}
 
-      const { clientSecret } = response.data;
+	async processCardPayment(
+		amount: number,
+		currency: string
+	): Promise<PaymentResponse> {
+		const stripe = await this.getStripe();
+		if (!stripe) {
+			return { success: false, message: "Stripe not initialized" };
+		}
+		try {
 
-      // Confirm payment
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement('card') as StripeCardElement,
-          billing_details: {
-            // Add billing details here
-          },
-        },
-      });
+			const accessToken = await this.getAccessToken();
 
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
+			if (!accessToken) {
+				throw new Error("Access token is missing");
+			}
+			// Create payment intent
+			const response = await axios.post(
+				"http://127.0.0.1:5000/subscription/payment-intent",
+				{ amount },
+				{
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
 
-      return {
-        success: true,
-        message: 'Payment processed successfully',
-        transactionId: result.paymentIntent.id
-      };
-    } catch (error) {
-      console.error('Payment failed:', error);
-      return {
-        success: false,
-        message: 'Payment failed'
-      };
-    }
-  }
+			const { clientSecret } = response.data;
+			const { id } = response.data;
 
-  // Process M-Pesa payment
-  async initiateMpesaPayment(phoneNumber: string, amount: number): Promise<PaymentResponse> {
-    try {
-      // Call Paystack API to initiate M-Pesa STK Push
-      const response = await axios.post('/api/mpesa/stkpush', {
-        phoneNumber,
-        amount
-      });
+			const intentSuccess = await axios.post(
+				"http://127.0.0.1:5000/subscription/intent-success",
+				{ id },
+				{
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (intentSuccess && intentSuccess) {
+				console.log(intentSuccess);
+			} else {
+				console.error("No message found in response data");
+			}
 
-      return {
-        success: true,
-        message: 'M-Pesa STK push initiated. Please check your phone.',
-        transactionId: response.data.checkoutRequestID
-      };
-    } catch (error) {
-      console.error('M-Pesa payment failed:', error);
-      return {
-        success: false,
-        message: 'M-Pesa payment failed'
-      };
-    }
-  }
+			return {
+				success: true,
+				message: "Payment processed successfully",
+				transactionId: id,
+				clientSecret,
+				accessToken,
+			};
+		} catch (error) {
+			console.error("Payment failed:", error);
+			return {
+				success: false,
+				message: "Payment failed",
+			};
+		}
+	}
 
-  // Verify M-Pesa payment status
-  async verifyMpesaPayment(checkoutRequestID: string): Promise<PaymentResponse> {
-    try {
-      const response = await axios.post('/api/mpesa/query', {
-        checkoutRequestID
-      });
+	// Process M-Pesa payment
+	async initiateMpesaPayment(
+		phoneNumber: string,
+		planName: string
+	): Promise<PaymentResponse> {
+		const accessToken = await this.getAccessToken();
+		try {
+			const response = await axios.post(
+				"http://127.0.0.1:5000/subscription/pay",
+				{
+					phoneNumber,
+					planName,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
 
-      return {
-        success: response.data.resultCode === '0',
-        message: response.data.resultDesc,
-        transactionId: response.data.mpesaReceiptNumber
-      };
-    } catch (error) {
-      console.error('Failed to verify M-Pesa payment:', error);
-      return {
-        success: false,
-        message: 'Payment verification failed'
-      };
-    }
-  }
 
-  // Query payments
-  async queryPayments(filters: {
-    startDate?: string;
-    endDate?: string;
-    status?: string;
-    method?: 'card' | 'mpesa';
-  }): Promise<any[]> {
-    try {
-      const response = await axios.get('/api/payments', { params: filters });
-      return response.data.payments;
-    } catch (error) {
-      console.error('Failed to query payments:', error);
-      return [];
-    }
-  }
+
+	return {
+		success: true,
+		message: "M-Pesa STK push initiated. Please check your phone.",
+		transactionId: response.data.checkoutRequestID,
+	};
+
+		} catch (error) {
+			console.error(`M-Pesa payment failed:, ${error} ${accessToken}`);
+
+			return {
+				success: false,
+				message: "M-Pesa payment failed",
+			};
+		}
+	}
+
+	// Verify M-Pesa payment status
+	async verifyMpesaPayment(
+		checkoutRequestID: string
+	): Promise<PaymentResponse> {
+		try {
+			const response = await axios.post("/api/mpesa/query", {
+				checkoutRequestID,
+			});
+
+			return {
+				success: response.data.resultCode === "0",
+				message: response.data.resultDesc,
+				transactionId: response.data.mpesaReceiptNumber,
+			};
+		} catch (error) {
+			console.error("Failed to verify M-Pesa payment:", error);
+			return {
+				success: false,
+				message: "Payment verification failed",
+			};
+		}
+	}
+
+	// Query payments
+	async queryPayments(filters: {
+		startDate?: string;
+		endDate?: string;
+		status?: string;
+		method?: "card" | "mpesa";
+	}): Promise<any[]> {
+		try {
+			const response = await axios.get("/api/payments", {
+				params: filters,
+			});
+			return response.data.payments;
+		} catch (error) {
+			console.error("Failed to query payments:", error);
+			return [];
+		}
+	}
 }
 
 export const paymentService = new PaymentService();

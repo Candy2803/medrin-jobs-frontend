@@ -9,6 +9,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useNavigate } from "react-router-dom";
+import { Bounce, toast } from "react-toastify";
 
 const VerificationDialog = ({
   email,
@@ -29,6 +30,17 @@ const VerificationDialog = ({
     try {
       await verifyEmail({ email, code: verificationCode }).unwrap();
       navigate("/");
+      toast.success("Verification was successful!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
       onClose();
     } catch (err: any) {
       setError(err?.data?.message || "Verification failed");

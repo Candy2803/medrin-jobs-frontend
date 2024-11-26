@@ -97,24 +97,24 @@ const Register = () => {
   // };
   const onSubmit = async (data: any) => {
     try {
-      const response = await register(data).unwrap();
+      /* const response =  */ await register(data).unwrap();
 
-      const { userData, accessToken } = response;
-
-      dispatch(
-        setCredentials({
-          user: {
-            id: userData.id,
-            email: userData.email,
-            name: userData.name,
-            role: userData.role,
-            image: userData.image,
-            isVerified: userData.isVerified,
-          },
-          accessToken,
-          isAuthenticated: true,
-        }),
-      );
+      // const { userData, accessToken } = response;
+      //
+      // dispatch(
+      //   setCredentials({
+      //     user: {
+      //       id: userData.id,
+      //       email: userData.email,
+      //       name: userData.name,
+      //       role: userData.role,
+      //       image: userData.image,
+      //       isVerified: userData.isVerified,
+      //     },
+      //     accessToken,
+      //     isAuthenticated: true,
+      //   }),
+      // );
       setIsDialogOpen(true); // Open the verification dialog
     } catch (err) {
       console.error("Registration failed", err);
@@ -297,4 +297,3 @@ const Register = () => {
 };
 
 export default Register;
-

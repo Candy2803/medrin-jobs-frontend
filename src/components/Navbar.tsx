@@ -52,15 +52,20 @@ const Navbar = () => {
               </Link>
 
               <div className="hidden md:ml-8 md:flex md:space-x-4">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className="text-gray-700 hover:text-blue-600 px-3 py-2"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+                {navigation
+                  .filter(
+                    (item) =>
+                      item.name !== "Employers" && item.name !== "Pricing",
+                  )
+                  .map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className="text-gray-700 hover:text-blue-600 px-3 py-2"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
               </div>
             </div>
 
@@ -77,22 +82,20 @@ const Navbar = () => {
 
                   {showProfileMenu && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                      {user?.role === "employer" && (
-                        <>
-                          <Link
-                            to="/employer/dashboard"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                          >
-                            Dashboard
-                          </Link>
-                          <Link
-                            to="/employer/jobs"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                          >
-                            My Jobs
-                          </Link>
-                        </>
-                      )}
+                      <>
+                        <Link
+                          to="/employer/dashboard"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          to="/employer/jobs"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        >
+                          My Jobs
+                        </Link>
+                      </>
                       <Link
                         to="/settings"
                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -118,12 +121,15 @@ const Navbar = () => {
                   Login / Register
                 </button>
               )}
-              <button
-                onClick={handlePostJob}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
-              >
-                Post a Job
-              </button>
+
+              {isAuthenticated && user?.role === "employer" && (
+                <button
+                  onClick={handlePostJob}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
+                >
+                  Post a Job
+                </button>
+              )}
             </div>
 
             <div className="flex md:hidden items-center">
@@ -220,4 +226,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
