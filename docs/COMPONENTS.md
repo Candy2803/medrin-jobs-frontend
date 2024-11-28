@@ -222,7 +222,7 @@ interface AuthState {
 
 -   Free Trial: 3 job posts
 -   One Off: $15 per post
--   Starter: $100/month (20 posts)
+-   Basic: $100/month (20 posts)
 -   Pro: $150/month (unlimited)
 -   Enterprise: $1000/year (custom features)
 

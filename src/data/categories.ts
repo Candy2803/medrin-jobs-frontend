@@ -7,7 +7,8 @@ import {
   Stethoscope,
   HeadphonesIcon,
   Car,
-  Rocket
+  Rocket,
+  Shield
 } from 'lucide-react';
 
 import { Category } from '../types';
@@ -84,7 +85,16 @@ export const categories: Category[] = [
     openPositions: 92,
     slug: 'project-management',
     description: 'Discover opportunities in project management, program management, and team leadership.'
+  },
+  {
+    id: '10',
+    name: 'Other',
+    icon: 'Shield',
+    openPositions: 5,
+    slug: 'other',
+    description: 'Explore roles in other roles.'
   }
+
 ];
 
 export const iconMap = {
@@ -96,5 +106,6 @@ export const iconMap = {
   Stethoscope,
   HeadphonesIcon,
   Car,
-  Rocket
+  Rocket,
+  Shield
 };

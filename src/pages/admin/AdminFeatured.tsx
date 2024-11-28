@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Star, Search, Filter } from 'lucide-react';
-import { Job } from '../../types';
+import { Job } from './AdminJobs';
 
 const AdminFeatured = () => {
   const [jobs, setJobs] = useState<Job[]>([]);

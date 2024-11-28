@@ -1,3 +1,4 @@
+// This is the tile that appears if one where to click the sign up/ login if they are a new user or appears when someone scrolls down to the footer
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,7 +78,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
   initialView,
 }) => {
   const [authMode, setAuthMode] = useState<"login" | "register">(
-    initialView === "user-type" ? "login" : initialView,
+    initialView === "user-type" ? "login" : initialView
   );
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] =
     useState(false);
@@ -119,7 +120,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
           user: userData,
           accessToken,
           isAuthenticated: true,
-        }),
+        })
       );
 
       navigate(userData.role === "admin" ? "/admin" : "/dashboard");
@@ -166,7 +167,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
           user: userData,
           accessToken,
           isAuthenticated: true,
-        }),
+        })
       );
 
       setIsVerificationDialogOpen(true);
@@ -175,11 +176,11 @@ const AuthModal: React.FC<AuthModalProps> = ({
       if (isFetchBaseQueryError(err)) {
         const serverError = err.data as { error: string };
         setRegisterErrorMessage(
-          serverError.error || "Registration failed. Please try again.",
+          serverError.error || "Registration failed. Please try again."
         );
       } else {
         setRegisterErrorMessage(
-          "An unexpected error occurred. Please try again.",
+          "An unexpected error occurred. Please try again."
         );
       }
     }
@@ -214,7 +215,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
           <form
             onSubmit={handleSubmit(
-              authMode === "login" ? handleLogin : handleRegister,
+              authMode === "login" ? handleLogin : handleRegister
             )}
             className="space-y-4"
           >
@@ -225,7 +226,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
                     setValue("role", value as "employer" | "jobseeker"); // Manually set the value in react-hook-form
                     clearErrors("role");
                   }}
-                  value={watch("role") || ""} // Use watch to get the current value of "role"
+                  value={watch("role") || ""}
+                  {...formRegister("role")} // Use watch to get the current value of "role"
                 >
                   <SelectTrigger className=" w-full">
                     <SelectValue placeholder="What do you want to do?" />
@@ -315,8 +317,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
               {isLoggingIn || isRegistering
                 ? "Processing..."
                 : authMode === "login"
-                  ? "Sign In"
-                  : "Register"}
+                ? "Sign In"
+                : "Register"}
             </Button>
           </form>
 

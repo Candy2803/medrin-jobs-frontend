@@ -1,7 +1,10 @@
+// This is the footer component
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Linkedin, ArrowUp, Phone, MapPin, Mail } from 'lucide-react';
 
 const Footer = () => {
+
+  // This is the function that enables the user to move back to the top of the page if they so wish
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -10,7 +13,7 @@ const Footer = () => {
     <footer className="bg-white border-t">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
+          {/* This contains where the company is  */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center">
               <span className="text-xl font-bold text-gray-900">Medrin Jobs</span>
@@ -21,6 +24,7 @@ const Footer = () => {
             </div>
             <div className="flex items-start space-x-2">
               <MapPin className="h-5 w-5 text-gray-600 mt-1 flex-shrink-0" />
+              {/* This was where we were when we were building the project */}
               <p className="text-gray-600">Ngong Lane Plaza, First Floor, Room 103, Ngong Road, Nairobi, Kenya</p>
             </div>
             <div className="flex items-start space-x-2">
@@ -29,7 +33,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* For Candidates */}
+          {/* For Candidates(Job seekers for be precise) */}
           <div>
             <h3 className="text-lg font-semibold mb-4">For Candidates</h3>
             <ul className="space-y-2">
@@ -70,6 +74,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-600 text-center md:text-left mb-4 md:mb-0">© 2024 Medrin Jobs. All Rights Reserved.</p>
           <div className="flex space-x-4">
+            {/* This is some initial data before we get the correct data to be placed */}
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
               <Facebook className="h-5 w-5" />
             </a>
@@ -83,6 +88,7 @@ const Footer = () => {
               <Linkedin className="h-5 w-5" />
             </a>
           </div>
+          {/* This is the button that will help you move back to the top of the webpage if you press it */}
           <button
             onClick={scrollToTop}
             className="fixed bottom-8 right-8 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors"

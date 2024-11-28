@@ -2,54 +2,58 @@
 
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import type { StripeCardElement } from "@stripe/stripe-js";
-import { CardElement } from "@stripe/react-stripe-js";
 import { Stripe } from "@stripe/stripe-js";
 
 interface PaymentResponse {
 	success: boolean;
-	message: string;
+	message: any;
 	transactionId?: string;
+	clientSecret?: string;
+	accessToken?: string;
 }
 
 class PaymentService {
 	private stripe: Promise<Stripe | null>; // This will store a Promise
-
+	private accessToken: string | null = null;
 	constructor() {
 		this.stripe = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || "");
 	}
+	private async getAccessToken(): Promise<string | null> {
+		if (this.accessToken) {
+			return this.accessToken;
+		}
 
+		// Otherwise, fetch it from localStorage and store it
+		const authData = JSON.parse(
+			localStorage.getItem("persist:auth") || "{}"
+		);
+		const data = authData.auth;
+		const parsedToken = JSON.parse(data);
+		this.accessToken = parsedToken.token || null; // Store token
+		return this.accessToken;
+	}
 
 	private async getStripe(): Promise<Stripe | null> {
 		return await this.stripe;
 	}
 
-
 	async processCardPayment(
 		amount: number,
-		currency: string,
-	
+		currency: string
 	): Promise<PaymentResponse> {
 		const stripe = await this.getStripe();
 		if (!stripe) {
 			return { success: false, message: "Stripe not initialized" };
 		}
 		try {
-
-			
-			const authData = JSON.parse(
-				localStorage.getItem("persist:auth") || "{}"
-			);
-			const data = authData.auth;
-			const parsedToken = JSON.parse(data);
-			const accessToken = parsedToken.token;
+			const accessToken = await this.getAccessToken();
 
 			if (!accessToken) {
 				throw new Error("Access token is missing");
 			}
 			// Create payment intent
 			const response = await axios.post(
-				"http://127.0.0.1:5000/subscription/payment-intent",
+				"https://medrin-jobs-backend-nn38.onrender.com/subscription/payment-intent",
 				{ amount },
 				{
 					headers: {
@@ -63,7 +67,7 @@ class PaymentService {
 			const { id } = response.data;
 
 			const intentSuccess = await axios.post(
-				"http://127.0.0.1:5000/subscription/intent-success",
+				"https://medrin-jobs-backend-nn38.onrender.com/subscription/intent-success",
 				{ id },
 				{
 					headers: {
@@ -78,14 +82,12 @@ class PaymentService {
 				console.error("No message found in response data");
 			}
 
-
-
-
-
 			return {
 				success: true,
 				message: "Payment processed successfully",
 				transactionId: id,
+				clientSecret,
+				accessToken,
 			};
 		} catch (error) {
 			console.error("Payment failed:", error);
@@ -99,14 +101,21 @@ class PaymentService {
 	// Process M-Pesa payment
 	async initiateMpesaPayment(
 		phoneNumber: string,
-		amount: string
+		planName: string
 	): Promise<PaymentResponse> {
+		const accessToken = await this.getAccessToken();
 		try {
 			const response = await axios.post(
-				"http://127.0.0.1:5000/subscription/pay",
+				"https://medrin-jobs-backend-nn38.onrender.com/subscription/pay",
 				{
 					phoneNumber,
-					amount,
+					planName,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						"Content-Type": "application/json",
+					},
 				}
 			);
 
@@ -116,7 +125,7 @@ class PaymentService {
 				transactionId: response.data.checkoutRequestID,
 			};
 		} catch (error) {
-			console.error(`M-Pesa payment failed:, ${error}`);
+			console.error(`M-Pesa payment failed:, ${error} ${accessToken}`);
 
 			return {
 				success: false,

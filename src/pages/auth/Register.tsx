@@ -141,7 +141,7 @@ const Register = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Form {...form}>
+          <Form {...form} >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {Object.values(errors).length > 0 && (
                 <div className="flex items-center">
@@ -272,8 +272,7 @@ const Register = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                onClick={handleSubmit}
-                disabled={isLoading}
+              disabled={isLoading}
                 className="w-full bg-blue-700 hover:bg-blue-800"
               >
                 {isLoading ? "Creating account..." : "Create account"}

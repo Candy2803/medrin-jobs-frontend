@@ -1,3 +1,5 @@
+// This is the shield button that will be shown when admins want to access the admin dashboard .
+// NB: This is just an initial presentation of how we want it to be accessed and an initial presentation to the client so we will come up with better ways to implement this code
 import { useState, useEffect } from 'react';
 import { Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +30,7 @@ const AdminAccessButton = () => {
     <div className="fixed bottom-8 left-8 z-50">
       <AnimatePresence>
         {(showTooltip || isHovered) && (
+          // The function to access admin starts from here
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -42,6 +45,7 @@ const AdminAccessButton = () => {
         )}
       </AnimatePresence>
 
+      {/* The button is being displayed from the button element below */}
       <motion.button
         onClick={() => navigate('/admin')}
         onMouseEnter={() => setIsHovered(true)}

@@ -1,6 +1,6 @@
 export interface JobPostingData {
   title: string;
-  company: string;
+company: string;
   description: string;
   requirements: string[];
   location: string;

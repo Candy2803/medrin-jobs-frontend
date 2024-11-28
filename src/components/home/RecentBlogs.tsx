@@ -1,3 +1,4 @@
+// This is the 7th part
 import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { featuredPosts } from '../../data/blogPosts';
@@ -6,14 +7,17 @@ const RecentBlogs = () => {
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* The div element holds the recent articles */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Articles</h2>
           <p className="text-gray-600">Stay updated with the latest career insights and job market trends</p>
         </div>
 
+        {/* This is where the tiles containing the featured blogs will be placed */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredPosts.map((post) => (
             <article key={post.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+              {/* This is where the blogs start being given definition of their outlook in terms of images, title, small description and the author*/}
               <Link to={`/blog/${post.id}`}>
                 <img
                   src={post.image}
@@ -40,6 +44,7 @@ const RecentBlogs = () => {
           ))}
         </div>
 
+        {/* This block acts like the place of telling users to see more articles. The users will be redirected to the blog section once clicked */}
         <div className="text-center mt-8">
           <Link
             to="/blog"

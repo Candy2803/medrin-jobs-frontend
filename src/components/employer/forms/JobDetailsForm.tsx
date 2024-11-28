@@ -76,6 +76,7 @@ const JobDetailsForm = ({ data, onChange, onNext }: JobDetailsFormProps) => {
           placeholder="Describe the role and responsibilities..."
         />
       </div>
+      
 
       <div>
         <label className="block text-sm font-medium text-gray-700">Requirements</label>

@@ -43,6 +43,7 @@ import Profile from "./pages/jobseeker/Profile";
 import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import AdminAccessButton from "./Components/AdminAccessButton";
 
+
 // Your Stripe public key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || "");
 
@@ -114,6 +115,7 @@ function App() {
 							</Route>
 
 							{/* Protected Employer Routes */}
+						
 							<Route
 								path='/employer/post-job'
 								element={

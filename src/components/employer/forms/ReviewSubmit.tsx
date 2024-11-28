@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { JobPostingData } from '../../../types/employer';
 import { Check } from 'lucide-react';
 import { useEmployerJourney } from '../../../hooks/useEmployerJourney';
@@ -6,17 +5,24 @@ import { useEmployerJourney } from '../../../hooks/useEmployerJourney';
 interface ReviewSubmitProps {
   data: JobPostingData;
   onBack: () => void;
-  onSubmit: () => void;
+  onSubmit: (data: JobPostingData) => Promise<void>;
 }
 
 const ReviewSubmit = ({ data, onBack, onSubmit }: ReviewSubmitProps) => {
-  const navigate = useNavigate();
-  const { postJob, isLoading } = useEmployerJourney();
+  const { isLoading } = useEmployerJourney(); // Keep isLoading logic scoped to the parent or refactor here if needed
 
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent default browser behavior
+    try {
+      await onSubmit(data); // Delegate the submission logic to the parent
+    } catch (error) {
+      console.error('Error submitting job:', error); // Handle error if necessary
+    }
+  };
 
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* ... rest of the review form remains the same ... */}
       
       <div className="flex justify-between">

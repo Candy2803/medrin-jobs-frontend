@@ -6,6 +6,7 @@ import { X, CreditCard, Phone } from "lucide-react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { paymentService } from "../../services/paymentService"; // Adjust the import as needed
 import axios from "axios";
+import { Bounce, toast } from "react-toastify";
 
 interface PaymentModalProps {
 	isOpen: boolean;
@@ -34,27 +35,25 @@ const PaymentModal = ({
 	);
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const stripe = useStripe();
-  const elements = useElements();
-    const [loading, setLoading] = useState(false);
+	const elements = useElements();
+	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-
-		        if (!stripe || !elements) {
+		setLoading(true);
+		try {
+			if (paymentMethod === "card") {
+				if (!stripe || !elements) {
 					alert("Stripe is not loaded!");
 					return;
 				}
 
 				const cardElement = elements.getElement(CardElement);
 				if (!cardElement) {
-					alert("CardElement is not initialized!");
+					toast.error("CardElement is not initialized!");
 					return;
-		}
-		setLoading(true);
-		if (paymentMethod === "card") {
-			if (!stripe || !elements) return; 
+				}
 
-			try {
 				const { paymentMethod, error } =
 					await stripe.createPaymentMethod({
 						type: "card",
@@ -64,52 +63,99 @@ const PaymentModal = ({
 					alert(error.message || "Payment method creation failed.");
 					return;
 				}
-				const response = await axios.post("http://127.0.0.1:5000/subscription/create-subscription", {
-					paymentMethodId: paymentMethod?.id,
-					plan: planName, 
-				});
-
-				alert(response.data.message || "Payment successful!");
-
 				const paymentResponse = await paymentService.processCardPayment(
 					parseFloat(amount),
-					currency,
-					
+					currency
 				);
-  const confirmPayment = await stripe.confirmCardPayment(clientSecret, {
-		payment_method: paymentMethod.id,
-  });
-				if (paymentResponse.success) {
-					alert(
-						"Payment successful! Transaction ID: " +
-							paymentResponse.transactionId
-					);
-					onClose(); 
-				} else {
-					alert(paymentResponse.message);
-				}
-			} catch (error) {
-				console.error("Error processing card payment:", error);
-				alert("Error processing card payment.");
-			}
-		} else if (paymentMethod === "mpesa") {
-			try {
-				const paymentResponse =
-					await paymentService.initiateMpesaPayment(
-						phoneNumber,
-						amount
-					);
+				const accessToken = paymentResponse.accessToken;
+				const response = await axios.post(
+					"https://medrin-jobs-backend-nn38.onrender.com/subscription/create-subscription",
+					{
+						paymentMethodId: paymentMethod?.id,
+						plan: planName,
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+							"Content-Type": "application/json",
+						},
+					}
+				);
 
-				if (paymentResponse.success) {
-					alert(paymentResponse.message);
-					onClose(); // Close modal on success
+				toast.success("Payment was successful!", {
+					position: "top-right",
+					autoClose: 5000,
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+					theme: "light",
+					transition: Bounce,
+				});
+
+				if (paymentResponse.clientSecret) {
+					await stripe.confirmCardPayment(
+						paymentResponse.clientSecret,
+						{
+							payment_method: paymentMethod.id,
+						}
+					);
 				} else {
-					alert(paymentResponse.message);
+					console.error(
+						"Payment response missing clientSecret.",
+						paymentResponse
+					);
 				}
-			} catch (error) {
-				console.error("Error processing M-Pesa payment:", error);
-				alert("Error processing M-Pesa payment.");
+
+				try {
+					if (paymentResponse.success) {
+						console.log(
+							"Payment successful! Transaction ID: " +
+								paymentResponse.transactionId
+						);
+						onClose();
+					} else {
+						toast.success(paymentResponse.message);
+					}
+				} catch (error) {
+					console.error("Error processing card payment:", error);
+					toast.error("Error processing card payment.");
+				}
+			} else if (paymentMethod === "mpesa") {
+				try {
+					const paymentResponse =
+						await paymentService.initiateMpesaPayment(
+							phoneNumber,
+							planName
+						);
+
+					if (paymentResponse.success) {
+						toast.success(paymentResponse.message, {
+							position: "top-right",
+							autoClose: 5000,
+							hideProgressBar: false,
+							closeOnClick: true,
+							pauseOnHover: true,
+							draggable: true,
+							progress: undefined,
+							theme: "light",
+							transition: Bounce,
+						});
+						onClose(); // Close modal on success
+					} else {
+						toast.error(paymentResponse.message);
+					}
+				} catch (error) {
+					console.error("Error processing M-Pesa payment:", error);
+					toast.error("Error processing M-Pesa payment.");
+				}
 			}
+		} catch (error) {
+			console.error("Error processing payment:", error);
+			toast.error("Error processing payment.");
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -202,7 +248,10 @@ const PaymentModal = ({
 										<label className='block text-sm font-medium text-gray-700 mb-1'>
 											Card Information
 										</label>
-										<CardElement options={{ hidePostalCode: true}} className='w-full border border-gray-300 rounded-md p-2' />
+										<CardElement
+											options={{ hidePostalCode: true }}
+											className='w-full border border-gray-300 rounded-md p-2'
+										/>
 									</div>
 								)}
 							</div>

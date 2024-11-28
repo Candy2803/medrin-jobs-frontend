@@ -1,4 +1,3 @@
-import { create } from 'zustand';
 
 interface EmployerUser {
   id: string;

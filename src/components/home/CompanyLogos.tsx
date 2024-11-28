@@ -1,3 +1,4 @@
+// This is the fifth part of the homepage
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { Company } from '../../types';
@@ -34,6 +35,7 @@ const companies: Company[] = [
 const CompanyLogos = () => {
   return (
     <section className="py-12 bg-white">
+      {/* This is the animation for slide preview*/}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Swiper
           modules={[Autoplay]}
@@ -55,6 +57,7 @@ const CompanyLogos = () => {
         >
           {companies.map((company) => (
             <SwiperSlide key={company.id}>
+              {/* This is the logo of the company as well as the name */}
               <div className="flex items-center justify-center h-20">
                 <img
                   src={company.logo}

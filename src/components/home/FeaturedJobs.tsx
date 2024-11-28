@@ -1,3 +1,4 @@
+// This is the third part of the code  
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Clock, DollarSign } from 'lucide-react';
 import { Job } from '../../types';
@@ -50,6 +51,7 @@ const FeaturedJobs = () => {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* This is the initial heading of the page */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Jobs</h2>
           <p className="text-gray-600">Know your worth and find the job that qualifies your life</p>
@@ -59,6 +61,7 @@ const FeaturedJobs = () => {
           {featuredJobs.map((job) => (
             <div key={job.id} className="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
+                {/* This is the logo as well as the initial */}
                 <div className="flex items-center mb-4">
                   <img src={job.logo} alt={job.company} className="w-12 h-12 rounded-full mr-4" />
                   <div>
@@ -66,6 +69,7 @@ const FeaturedJobs = () => {
                     <p className="text-gray-600">{job.company}</p>
                   </div>
                 </div>
+                {/* This is the short description of the job location , type,salary range */}
                 <div className="space-y-2">
                   <div className="flex items-center text-gray-600">
                     <MapPin className="h-4 w-4 mr-2" />
@@ -80,6 +84,7 @@ const FeaturedJobs = () => {
                     {job.salary}
                   </div>
                 </div>
+                {/* This is the div that contains the date of when the job was posted  as well as the button for applying*/}
                 <div className="mt-4 flex justify-between items-center">
                   <span className="text-sm text-gray-500">{job.postedAt}</span>
                   <button 
@@ -94,6 +99,7 @@ const FeaturedJobs = () => {
           ))}
         </div>
 
+        {/* This will take someone to jobs */}
         <div className="text-center mt-8">
           <button 
             onClick={() => navigate('/jobs')}

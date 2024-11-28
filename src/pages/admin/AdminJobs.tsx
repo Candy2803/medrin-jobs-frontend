@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Briefcase, Edit, Trash2, Plus, Search, Ban, Star, AlertCircle } from 'lucide-react';
 
-interface Job {
+export interface Job {
   id: string;
   title: string;
   company: string;
@@ -10,6 +10,7 @@ interface Job {
   status: 'active' | 'expired' | 'draft' | 'banned';
   featured: boolean;
   postedAt: string;
+  logo: string;
 }
 
 const AdminJobs = () => {

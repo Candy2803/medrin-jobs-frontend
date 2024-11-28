@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Search, MapPin, Filter } from 'lucide-react';
 import JobList from '../components/jobs/JobList';
 import JobFilters from '../components/jobs/JobFilters';
-import { Job } from '../types';
 
 const Jobs = () => {
   const [searchTerm, setSearchTerm] = useState('');

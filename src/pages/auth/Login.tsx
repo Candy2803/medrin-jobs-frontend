@@ -40,6 +40,7 @@ const Login = () => {
       const response = await login(data).unwrap();
 
       const { userData, accessToken } = response;
+      
   localStorage.setItem("accessToken", accessToken);
       dispatch(
         setCredentials({
@@ -63,11 +64,11 @@ const Login = () => {
           navigate("/admin");
           break;
         case "employer":
-          navigate("/employer/dashboard");
+          navigate("/employer/settings");
           break;
         case "jobseeker":
         default:
-          navigate("/dashboard");
+          navigate("/");
           break;
       }
     } catch (err) {

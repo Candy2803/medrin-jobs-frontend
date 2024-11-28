@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Ban, Search, AlertTriangle } from 'lucide-react';
-import { Job } from '../../types';
-
+import { Job } from "./AdminJobs";
 const AdminBanned = () => {
   const [bannedItems, setBannedItems] = useState<(Job & { reason: string })[]>([]);
   const [searchTerm, setSearchTerm] = useState('');

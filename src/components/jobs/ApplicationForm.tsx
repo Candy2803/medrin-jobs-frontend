@@ -1,6 +1,7 @@
+// This is where people will be applying for jobs
 import { useState } from 'react';
 import { X, Upload, Loader2 } from 'lucide-react';
-import { Job } from '../../types';
+import { Job } from '@/pages/admin/AdminJobs';
 
 interface ApplicationFormProps {
   job: Job;
@@ -28,6 +29,7 @@ const ApplicationForm = ({ job, onClose }: ApplicationFormProps) => {
     
     // Show success message and close
     alert('Application submitted successfully!');
+    console.log(formData)
     setIsSubmitting(false);
     onClose();
   };
