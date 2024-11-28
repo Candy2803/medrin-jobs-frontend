@@ -1,8 +1,8 @@
 import { Search, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { use } from 'framer-motion/client';
+// import { use } from 'framer-motion/client';
 import { useEffect, useState } from 'react';
-import Jobs from '../../pages/Jobs';
+// import Jobs from '../../pages/Jobs';
 
 
 const Hero = () => {

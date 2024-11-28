@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import Hero from '../components/home/Hero';
-import PopularCategories from '../components/home/PopularCategories';
-import FeaturedJobs from '../components/home/FeaturedJobs';
-import Testimonials from '../components/home/Testimonials';
-import CompanyLogos from '../components/home/CompanyLogos';
-import CallToAction from '../components/home/CallToAction';
-import RecentBlogs from '../components/home/RecentBlogs';
-import UserIntentModal from '../components/modals/UserIntentModal';
+import Hero from '../Components/home/Hero';
+import PopularCategories from '../Components/home/PopularCategories';
+import FeaturedJobs from '../Components/home/FeaturedJobs';
+import Testimonials from '../Components/home/Testimonials';
+import CompanyLogos from '../Components/home/CompanyLogos';
+import CallToAction from '../Components/home/CallToAction';
+import RecentBlogs from '../Components/home/RecentBlogs';
+import UserIntentModal from '../Components/modals/UserIntentModal';
 
 const Home = () => {
   const [showIntentModal, setShowIntentModal] = useState(false);

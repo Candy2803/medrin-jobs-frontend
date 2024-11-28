@@ -6,8 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "./Components/Navbar";
+import Footer from "./Components/Footer";
 import Home from "./pages/Home";
 import Jobs from "./pages/Jobs";
 import Contact from "./pages/Contact";
@@ -40,8 +40,8 @@ import JobSeekerDashboard from "./pages/jobseeker/JobSeekerDashboard";
 import Applications from "./pages/jobseeker/Applications";
 import SavedJobs from "./pages/jobseeker/SavedJobs";
 import Profile from "./pages/jobseeker/Profile";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import AdminAccessButton from "./components/AdminAccessButton";
+import ProtectedRoute from "./Components/auth/ProtectedRoute";
+import AdminAccessButton from "./Components/AdminAccessButton";
 
 // Your Stripe public key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || "");
