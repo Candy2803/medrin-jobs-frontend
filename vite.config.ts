@@ -7,7 +7,11 @@ import path from "path";
 export default defineConfig({
 	plugins: [react()],
 	optimizeDeps: {
-		include: ["@reduxjs/toolkit"],
+		include: [
+			"@reduxjs/toolkit",
+			"@stripe/react-stripe-js",
+			"@stripe/stripe-js",
+		],
 		exclude: ["lucide-react"],
 	},
 	resolve: {
