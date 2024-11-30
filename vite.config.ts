@@ -22,7 +22,6 @@ export default defineConfig({
 	},
 	build: {
 		rollupOptions: {
-			external: ["@stripe/react-stripe-js", "@stripe/stripe-js"],
 			output: {
 				manualChunks: {
 					react: ["react", "react-dom"],
