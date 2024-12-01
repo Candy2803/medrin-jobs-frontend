@@ -69,7 +69,7 @@ const PaymentModal = ({
 				);
 				const accessToken = paymentResponse.accessToken;
 				const response = await axios.post(
-					"https://medrin-jobs-backend-nn38.onrender.com/subscription/create-subscription",
+					"https://medrin-jobs-backend-1.onrender.com/subscription/create-subscription",
 					{
 						paymentMethodId: paymentMethod?.id,
 						plan: planName,

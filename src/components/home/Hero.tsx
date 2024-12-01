@@ -19,7 +19,7 @@ const Hero = () => {
 		const fetchJobs = async () => {
 			try {
 				const response = await fetch(
-					"https://medrin-jobs-backend-nn38.onrender.com/job"
+					"https://medrin-jobs-backend-1.onrender.com/job"
 				);
 				const data = await response.json();
 				setJobsAmount(data.length || []);
@@ -35,7 +35,7 @@ const Hero = () => {
 		setLoading(true);
 		try {
 			const response = await fetch(
-				`https://medrin-jobs-backend-nn38.onrender.com/job/search?query=${query}&location=${location}`
+				`https://medrin-jobs-backend-1.onrender.com/job/search?query=${query}&location=${location}`
 			);
 			const data = await response.json();
 			setJobs(data || []);

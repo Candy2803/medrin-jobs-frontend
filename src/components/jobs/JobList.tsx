@@ -39,7 +39,7 @@ const JobList = () => {
 			setLoading(true);
 			try {
 				const response = await axios.get(
-					"https://medrin-jobs-backend-nn38.onrender.com/job"
+					"https://medrin-jobs-backend-1.onrender.com/job"
 				);
 				console.log(response.data);
 

@@ -51,7 +51,7 @@ const PostJobWizard = () => {
 			}
 
 			const response = await axios.post(
-				"https://medrin-jobs-backend-nn38.onrender.com/job/postJob",
+				"https://medrin-jobs-backend-1.onrender.com/job/postJob",
 				jobData,
 				{
 					headers: {

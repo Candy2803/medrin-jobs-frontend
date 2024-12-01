@@ -33,7 +33,7 @@ const EmployerDashboard = () => {
 		const jobUpdates = async () => {
 			try {
 				const response = await axios.get(
-					"https://medrin-jobs-backend-nn38.onrender.com/job/getJobByUserId",
+					"https://medrin-jobs-backend-1.onrender.com/job/getJobByUserId",
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,

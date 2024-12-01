@@ -37,7 +37,7 @@ const EmployerSettings = () => {
 				}
 				console.log(token);
 				const response = await axios.get(
-					"https://medrin-jobs-backend-nn38.onrender.com/employer/profile",
+					"https://medrin-jobs-backend-1.onrender.com/employer/profile",
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,
@@ -78,7 +78,7 @@ const EmployerSettings = () => {
 				throw new Error("Authentication token is missing.");
 			}
 			const response = await axios.put(
-				"https://medrin-jobs-backend-nn38.onrender.com/employer/update-details",
+				"https://medrin-jobs-backend-1.onrender.com/employer/update-details",
 				formData,
 				{
 					headers: {

@@ -53,7 +53,7 @@ class PaymentService {
 			}
 			// Create payment intent
 			const response = await axios.post(
-				"https://medrin-jobs-backend-nn38.onrender.com/subscription/payment-intent",
+				"https://medrin-jobs-backend-1.onrender.com/subscription/payment-intent",
 				{ amount },
 				{
 					headers: {
@@ -67,7 +67,7 @@ class PaymentService {
 			const { id } = response.data;
 
 			const intentSuccess = await axios.post(
-				"https://medrin-jobs-backend-nn38.onrender.com/subscription/intent-success",
+				"https://medrin-jobs-backend-1.onrender.com/subscription/intent-success",
 				{ id },
 				{
 					headers: {
@@ -106,7 +106,7 @@ class PaymentService {
 		const accessToken = await this.getAccessToken();
 		try {
 			const response = await axios.post(
-				"https://medrin-jobs-backend-nn38.onrender.com/subscription/pay",
+				"https://medrin-jobs-backend-1.onrender.com/subscription/pay",
 				{
 					phoneNumber,
 					planName,
