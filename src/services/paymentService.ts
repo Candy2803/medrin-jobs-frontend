@@ -27,15 +27,19 @@ class PaymentService {
 		const authData = JSON.parse(
 			localStorage.getItem("persist:auth") || "{}"
 		);
-		const data = authData.auth;
+		const data = authData.token;
 		const parsedToken = JSON.parse(data);
 		this.accessToken = parsedToken.token || null; // Store token
+		console.log(authData);
 		return this.accessToken;
+		
 	}
+
 
 	private async getStripe(): Promise<Stripe | null> {
 		return await this.stripe;
 	}
+	
 
 	async processCardPayment(
 		amount: number,

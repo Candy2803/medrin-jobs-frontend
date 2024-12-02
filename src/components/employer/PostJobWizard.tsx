@@ -42,8 +42,8 @@ const PostJobWizard = () => {
 			const authData = JSON.parse(
 				localStorage.getItem("persist:auth") || "{}"
 			);
-			const token = authData.auth
-				? JSON.parse(authData.auth)?.token
+			const token = authData.token
+				? JSON.parse(authData.token)
 				: null;
 
 			if (!token) {
